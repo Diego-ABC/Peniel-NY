@@ -1,0 +1,60 @@
+name: Firebase Deploy
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "functions/**/*"
+      - "public/**/*"
+      - "firestore.rules"
+      - "database.rules.json"
+      - "storage.rules"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+
+      - name: Install dependencies
+        run: |
+          npm install -g firebase-tools
+          npm install
+
+      # Deploy Functions if there are changes in the functions directory
+      - name: Deploy Firebase Functions
+        if: contains(github.event.head_commit.modified, 'functions/')
+        run: |
+          firebase deploy --only functions --token ${{ secrets.FIREBASE_AUTH_TOKEN }}
+
+      # Deploy Hosting if there are changes in the public directory
+      - name: Deploy Firebase Hosting
+        if: contains(github.event.head_commit.modified, 'public/')
+        run: |
+          firebase deploy --only hosting --token ${{ secrets.FIREBASE_AUTH_TOKEN }}
+
+      # Deploy Firestore Rules if there are changes to firestore.rules
+      - name: Deploy Firestore Rules
+        if: contains(github.event.head_commit.modified, 'firestore.rules')
+        run: |
+          firebase deploy --only firestore:rules --token ${{ secrets.FIREBASE_AUTH_TOKEN }}
+
+      # Deploy Realtime Database Rules if there are changes to database.rules.json
+      - name: Deploy Realtime Database Rules
+        if: contains(github.event.head_commit.modified, 'database.rules.json')
+        run: |
+          firebase deploy --only database:rules --token ${{ secrets.FIREBASE_AUTH_TOKEN }}
+
+      # Deploy Cloud Storage Rules if there are changes to storage.rules
+      - name: Deploy Cloud Storage Rules
+        if: contains(github.event.head_commit.modified, 'storage.rules')
+        run: |
+          firebase deploy --only storage:rules --token ${{ secrets.FIREBASE_AUTH_TOKEN }}

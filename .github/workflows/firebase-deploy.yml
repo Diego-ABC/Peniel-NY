@@ -203,17 +203,22 @@ jobs:
         id: preview-deploy
         run: |
           npm install -g firebase-tools
-          firebase hosting:channel:deploy dev \
+
+          # Run deploy and capture output
+          set -o pipefail
+          OUTPUT=$(firebase hosting:channel:deploy dev \
             --project "${{ secrets.FIREBASE_PROJECT_ID }}" \
-            --expires 7d > result.json 2>&1
-          cat result.json
-          # Try parsing only if result contains JSON-looking output
-          if jq -e . result.json >/dev/null 2>&1; then
-            PREVIEW_URL=$(jq -r '.result.previewUrl' result.json)
+            --expires 7d 2>&1)
+
+          echo "$OUTPUT"
+
+          # Try extracting the URL from the raw output (if it's JSON-like)
+          if echo "$OUTPUT" | jq -e . >/dev/null 2>&1; then
+            PREVIEW_URL=$(echo "$OUTPUT" | jq -r '.result.previewUrl')
             echo "preview_url=$PREVIEW_URL" >> $GITHUB_OUTPUT
           else
-            echo "Failed to parse result.json. Contents:"
-            cat result.json
+            echo "❌ Could not parse preview URL. Output was:"
+            echo "$OUTPUT"
             exit 1
           fi
 

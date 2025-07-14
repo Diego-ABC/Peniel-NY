@@ -2,59 +2,106 @@ name: Firebase Deploy
 
 on:
   push:
-    branches:
-      - main
-    paths:
-      - "functions/**/*"
-      - "public/**/*"
-      - "firestore.rules"
-      - "database.rules.json"
-      - "storage.rules"
+    branches: [main]
 
 jobs:
-  deploy:
+  deploy-hosting:
+    name: 🚀 Deploy Firebase Hosting
     runs-on: ubuntu-latest
-
+    paths:
+      - "web/**"
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: "14"
+          node-version: "18"
+
+      - name: Install dependencies and build web app
+        run: |
+          npm install
+          npm install --prefix web
+          npm run build --prefix web
+
+      - name: Deploy Hosting
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
+          projectId: "your-project-id"
+          deployTargets: hosting
+
+  deploy-functions:
+    name: ⚙️ Deploy Firebase Functions
+    runs-on: ubuntu-latest
+    paths:
+      - "functions/**"
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
 
       - name: Install dependencies
         run: |
-          npm install -g firebase-tools
           npm install
+          npm install --prefix functions
 
-      # Deploy Functions if there are changes in the functions directory
-      - name: Deploy Firebase Functions
-        if: contains(github.event.head_commit.modified, 'functions/')
-        run: |
-          firebase deploy --only functions --token ${{ secrets.FIREBASE_AUTH_TOKEN }}
+      - name: Deploy Functions
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
+          projectId: "your-project-id"
+          deployTargets: functions
 
-      # Deploy Hosting if there are changes in the public directory
-      - name: Deploy Firebase Hosting
-        if: contains(github.event.head_commit.modified, 'web/dist')
-        run: |
-          firebase deploy --only hosting --token ${{ secrets.FIREBASE_AUTH_TOKEN }}
+  deploy-firestore-rules:
+    name: 🔐 Deploy Firestore Rules
+    runs-on: ubuntu-latest
+    paths:
+      - "firestore.rules"
+    steps:
+      - uses: actions/checkout@v3
 
-      # Deploy Firestore Rules if there are changes to firestore.rules
       - name: Deploy Firestore Rules
-        if: contains(github.event.head_commit.modified, 'firestore.rules')
-        run: |
-          firebase deploy --only firestore:rules --token ${{ secrets.FIREBASE_AUTH_TOKEN }}
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
+          projectId: "your-project-id"
+          deployTargets: firestore:rules
 
-      # Deploy Realtime Database Rules if there are changes to database.rules.json
+  deploy-db-rules:
+    name: 📘 Deploy Realtime Database Rules
+    runs-on: ubuntu-latest
+    paths:
+      - "database.rules.json"
+    steps:
+      - uses: actions/checkout@v3
+
       - name: Deploy Realtime Database Rules
-        if: contains(github.event.head_commit.modified, 'database.rules.json')
-        run: |
-          firebase deploy --only database:rules --token ${{ secrets.FIREBASE_AUTH_TOKEN }}
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
+          projectId: "your-project-id"
+          deployTargets: database:rules
 
-      # Deploy Cloud Storage Rules if there are changes to storage.rules
-      - name: Deploy Cloud Storage Rules
-        if: contains(github.event.head_commit.modified, 'storage.rules')
-        run: |
-          firebase deploy --only storage:rules --token ${{ secrets.FIREBASE_AUTH_TOKEN }}
+  deploy-storage-rules:
+    name: 🗂 Deploy Storage Rules
+    runs-on: ubuntu-latest
+    paths:
+      - "storage.rules"
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Deploy Storage Rules
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
+          projectId: "your-project-id"
+          deployTargets: storage:rules

@@ -213,15 +213,29 @@ jobs:
           echo "=== Firebase CLI Output ==="
           cat output.log
 
-          # Attempt to parse the preview URL
-          if jq -e . output.log >/dev/null 2>&1; then
-            PREVIEW_URL=$(jq -r '.result.previewUrl' output.log)
-            echo "preview_url=$PREVIEW_URL" >> $GITHUB_OUTPUT
-          else
-            echo "❌ Could not parse preview URL. Here's the output:"
-            cat output.log
-            exit 1
-          fi
+          # Just fail manually to pause here for now
+          exit 1
+      #   run: |
+      #     npm install -g firebase-tools
 
-      - name: Show preview URL
-        run: 'echo "Preview URL: ${{ steps.preview-deploy.outputs.preview_url }}"'
+      #     # Run deploy and capture output to a temp file
+      #     set -o pipefail
+      #     firebase hosting:channel:deploy dev \
+      #       --project "${{ secrets.FIREBASE_PROJECT_ID }}" \
+      #       --expires 7d > output.log 2>&1
+
+      #     echo "=== Firebase CLI Output ==="
+      #     cat output.log
+
+      #     # Attempt to parse the preview URL
+      #     if jq -e . output.log >/dev/null 2>&1; then
+      #       PREVIEW_URL=$(jq -r '.result.previewUrl' output.log)
+      #       echo "preview_url=$PREVIEW_URL" >> $GITHUB_OUTPUT
+      #     else
+      #       echo "❌ Could not parse preview URL. Here's the output:"
+      #       cat output.log
+      #       exit 1
+      #     fi
+
+      # - name: Show preview URL
+      #   run: 'echo "Preview URL: ${{ steps.preview-deploy.outputs.preview_url }}"'

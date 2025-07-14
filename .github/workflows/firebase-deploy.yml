@@ -5,21 +5,47 @@ on:
     branches: [main]
 
 jobs:
-  deploy-hosting:
-    name: 🚀 Deploy Firebase Hosting
+  # Step 1: Detect what changed
+  changes:
+    name: 🧠 Analyze file changes
     runs-on: ubuntu-latest
-    paths:
-      - "web/**"
+    outputs:
+      hosting: ${{ steps.filter.outputs.hosting }}
+      functions: ${{ steps.filter.outputs.functions }}
+      firestore: ${{ steps.filter.outputs.firestore }}
+      database: ${{ steps.filter.outputs.database }}
+      storage: ${{ steps.filter.outputs.storage }}
     steps:
       - uses: actions/checkout@v3
+      - name: Filter changed files
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            hosting:
+              - 'web/**'
+            functions:
+              - 'functions/**'
+            firestore:
+              - 'firestore.rules'
+            database:
+              - 'database.rules.json'
+            storage:
+              - 'storage.rules'
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+  # Step 2: Deploy Hosting if changed
+  deploy-hosting:
+    name: 🚀 Deploy Hosting
+    needs: changes
+    if: needs.changes.outputs.hosting == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: "18"
 
-      - name: Install dependencies and build web app
-        run: |
+      - run: |
           npm install
           npm install --prefix web
           npm run build --prefix web
@@ -29,24 +55,22 @@ jobs:
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
-          projectId: "your-project-id"
+          projectId: "peniel-ny"
           deployTargets: hosting
 
+  # Step 3: Deploy Functions if changed
   deploy-functions:
-    name: ⚙️ Deploy Firebase Functions
+    name: ⚙️ Deploy Functions
+    needs: changes
+    if: needs.changes.outputs.functions == 'true'
     runs-on: ubuntu-latest
-    paths:
-      - "functions/**"
     steps:
       - uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: "18"
 
-      - name: Install dependencies
-        run: |
+      - run: |
           npm install
           npm install --prefix functions
 
@@ -55,14 +79,15 @@ jobs:
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
-          projectId: "your-project-id"
+          projectId: "peniel-ny"
           deployTargets: functions
 
-  deploy-firestore-rules:
+  # Step 4: Deploy Firestore Rules if changed
+  deploy-firestore:
     name: 🔐 Deploy Firestore Rules
+    needs: changes
+    if: needs.changes.outputs.firestore == 'true'
     runs-on: ubuntu-latest
-    paths:
-      - "firestore.rules"
     steps:
       - uses: actions/checkout@v3
 
@@ -71,30 +96,32 @@ jobs:
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
-          projectId: "your-project-id"
+          projectId: "peniel-ny"
           deployTargets: firestore:rules
 
-  deploy-db-rules:
-    name: 📘 Deploy Realtime Database Rules
+  # Step 5: Deploy Database Rules if changed
+  deploy-database:
+    name: 📘 Deploy Realtime DB Rules
+    needs: changes
+    if: needs.changes.outputs.database == 'true'
     runs-on: ubuntu-latest
-    paths:
-      - "database.rules.json"
     steps:
       - uses: actions/checkout@v3
 
-      - name: Deploy Realtime Database Rules
+      - name: Deploy DB Rules
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
-          projectId: "your-project-id"
+          projectId: "peniel-ny"
           deployTargets: database:rules
 
-  deploy-storage-rules:
+  # Step 6: Deploy Storage Rules if changed
+  deploy-storage:
     name: 🗂 Deploy Storage Rules
+    needs: changes
+    if: needs.changes.outputs.storage == 'true'
     runs-on: ubuntu-latest
-    paths:
-      - "storage.rules"
     steps:
       - uses: actions/checkout@v3
 
@@ -103,5 +130,5 @@ jobs:
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
-          projectId: "your-project-id"
+          projectId: "peniel-ny"
           deployTargets: storage:rules

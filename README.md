@@ -46,7 +46,6 @@ cp secrets.template.json .secrets.json
 2. Open `.secrets.json` and fill in:
    - Firebase Project ID
    - Firebase Web Config (apiKey, appId, etc.)
-   - Stripe keys or other environment values
 
 ---
 

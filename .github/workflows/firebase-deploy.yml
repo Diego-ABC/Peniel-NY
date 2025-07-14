@@ -211,4 +211,4 @@ jobs:
           echo "preview_url=$PREVIEW_URL" >> $GITHUB_OUTPUT
 
       - name: Show preview URL
-        run: echo "Preview URL: ${{ steps.preview-deploy.outputs.preview_url }}"
+        run: 'echo "Preview URL: ${{ steps.preview-deploy.outputs.preview_url }}"'

@@ -3,10 +3,16 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev:emulators": "firebase emulators:start",
+    "dev:web": "npm run dev --prefix web",
+    "start": "npm-run-all --parallel dev:emulators dev:web"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  }
 }

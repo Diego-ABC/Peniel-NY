@@ -37,7 +37,7 @@ jobs:
 
       # Deploy Hosting if there are changes in the public directory
       - name: Deploy Firebase Hosting
-        if: contains(github.event.head_commit.modified, 'public/')
+        if: contains(github.event.head_commit.modified, 'web/dist')
         run: |
           firebase deploy --only hosting --token ${{ secrets.FIREBASE_AUTH_TOKEN }}
 

@@ -206,7 +206,6 @@ jobs:
           firebase hosting:channel:deploy dev \
             --project "${{ secrets.FIREBASE_PROJECT_ID }}" \
             --expires 7d > result.json
-          # Extract URL from the deploy command's JSON output:
           cat result.json
           PREVIEW_URL=$(jq -r '.result.previewUrl' result.json)
           echo "preview_url=$PREVIEW_URL" >> $GITHUB_OUTPUT

@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "secrets-init": "node scripts/setup-secrets.js",
-    "dev:emulators": "firebase emulators:start",
+    "dev:emulators": "firebase emulators:start --import=./emulator-data --export-on-exit",
     "dev:web": "npm run dev --prefix web",
     "start": "npm-run-all --parallel --continue-on-error dev:emulators dev:web",
     "build": "npm run build --prefix web"

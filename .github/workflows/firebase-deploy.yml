@@ -9,13 +9,15 @@ jobs:
     name: 🧠 Analyze Changes
     runs-on: ubuntu-latest
     outputs:
-      hosting: ${{ steps.filter.outputs.hosting }}
-      functions: ${{ steps.filter.outputs.functions }}
-      firestore: ${{ steps.filter.outputs.firestore }}
-      database: ${{ steps.filter.outputs.database }}
-      storage: ${{ steps.filter.outputs.storage }}
+      hosting: ${{ steps.filter.outputs.hosting || 'false' }}
+      functions: ${{ steps.filter.outputs.functions || 'false' }}
+      firestore: ${{ steps.filter.outputs.firestore || 'false' }}
+      database: ${{ steps.filter.outputs.database || 'false' }}
+      storage: ${{ steps.filter.outputs.storage || 'false' }}
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
 
       - name: Filter Changed Files
         id: filter
@@ -32,27 +34,44 @@ jobs:
               - 'database.rules.json'
             storage:
               - 'storage.rules'
+          base: ${{ github.event.before }}
 
-  setup:
-    name: 🔐 Set Up Credentials
-    runs-on: ubuntu-latest
-    outputs:
-      creds-file: ${{ steps.write-creds.outputs.creds-file }}
-    steps:
-      - name: Write service account credentials
-        id: write-creds
+      - name: Debug paths filter output
         run: |
-          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > ${{ github.workspace }}/firebase-creds.json
-          echo "GOOGLE_APPLICATION_CREDENTIALS=${{ github.workspace }}/firebase-creds.json" >> $GITHUB_ENV
-          echo "creds-file=${{ github.workspace }}/firebase-creds.json" >> $GITHUB_OUTPUT
+          echo "Hosting: ${{ steps.filter.outputs.hosting }}"
+          echo "Functions: ${{ steps.filter.outputs.functions }}"
+          echo "Firestore: ${{ steps.filter.outputs.firestore }}"
+          echo "Database: ${{ steps.filter.outputs.database }}"
+          echo "Storage: ${{ steps.filter.outputs.storage }}"
+
+  # setup:
+  #   name: 🔐 Set Up Credentials
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     creds-path: ${{ steps.write-creds.outputs.creds-path }}
+  #   steps:
+  #     - name: Write service account credentials
+  #       id: write-creds
+  #       run: |
+  #         echo -e "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > ${{ github.workspace }}/firebase-creds.json
+  #         echo "GOOGLE_APPLICATION_CREDENTIALS=${{ github.workspace }}/firebase-creds.json" >> $GITHUB_ENV
+  #         echo "creds-path=${{ github.workspace }}/firebase-creds.json" >> $GITHUB_OUTPUT
+
+  #         echo "🔍 Dumping service account JSON (for debug only):"
+  #         head -n 5 ${{ github.workspace }}/firebase-creds.json
 
   deploy-hosting:
     name: 🚀 Deploy Hosting
-    needs: [changes, setup]
+    needs: changes
     if: needs.changes.outputs.hosting == 'true' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      # - name: Write Firebase credentials
+      #   run: |
+      #     echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > firebase-creds.json
+      #     echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/firebase-creds.json" >> $GITHUB_ENV
 
       # Cache root node_modules
       - name: Cache root node_modules
@@ -81,18 +100,28 @@ jobs:
           npm install --prefix web
           npm run build --prefix web
 
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools@14.10.1
+
       - name: Deploy Hosting
         run: |
-          npm install -g firebase-tools
-          firebase deploy --only hosting --project "${{ secrets.FIREBASE_PROJECT_ID }}"
+          firebase deploy \
+          --only hosting \
+          --project "${{ secrets.FIREBASE_PROJECT_ID }}" \
+          --token "${{ secrets.FIREBASE_AUTH_TOKEN }}"
 
   deploy-functions:
     name: ⚙️ Deploy Functions
-    needs: [changes, setup]
+    needs: changes
     if: needs.changes.outputs.functions == 'true' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      # - name: Write Firebase credentials
+      #   run: |
+      #     echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > firebase-creds.json
+      #     echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/firebase-creds.json" >> $GITHUB_ENV
 
       # Cache root node_modules
       - name: Cache root node_modules
@@ -120,57 +149,97 @@ jobs:
           npm install
           npm install --prefix functions
 
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools@14.10.1
+
       - name: Deploy Functions
         run: |
-          npm install -g firebase-tools
-          firebase deploy --only functions --project "${{ secrets.FIREBASE_PROJECT_ID }}"
+          firebase deploy \
+          --only functions \
+          --project "${{ secrets.FIREBASE_PROJECT_ID }}"
+          --token "${{ secrets.FIREBASE_AUTH_TOKEN }}"
 
   deploy-firestore:
     name: 🔐 Deploy Firestore Rules
-    needs: [changes, setup]
+    needs: changes
     if: needs.changes.outputs.firestore == 'true' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
+      # - name: Write Firebase credentials
+      #   run: |
+      #     echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > firebase-creds.json
+      #     echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/firebase-creds.json" >> $GITHUB_ENV
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools@14.10.1
+
       - name: Deploy Firestore Rules
         run: |
-          npm install -g firebase-tools
-          firebase deploy --only firestore:rules --project "${{ secrets.FIREBASE_PROJECT_ID }}"
+          firebase deploy \
+          --only firestore:rules \
+          --project "${{ secrets.FIREBASE_PROJECT_ID }}" \
+          --token "${{ secrets.FIREBASE_AUTH_TOKEN }}"
 
   deploy-database:
     name: 📘 Deploy Realtime DB Rules
-    needs: [changes, setup]
+    needs: changes
     if: needs.changes.outputs.database == 'true' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
+      # - name: Write Firebase credentials
+      #   run: |
+      #     echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > firebase-creds.json
+      #     echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/firebase-creds.json" >> $GITHUB_ENV
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools@14.10.1
+
       - name: Deploy Realtime DB Rules
         run: |
-          npm install -g firebase-tools
-          firebase deploy --only database:rules --project "${{ secrets.FIREBASE_PROJECT_ID }}"
+          firebase deploy \
+          --only database:rules \
+          --project "${{ secrets.FIREBASE_PROJECT_ID }}" \
+          --token "${{ secrets.FIREBASE_AUTH_TOKEN }}"
 
   deploy-storage:
     name: 🗂 Deploy Storage Rules
-    needs: [changes, setup]
+    needs: changes
     if: needs.changes.outputs.storage == 'true' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
+      # - name: Write Firebase credentials
+      #   run: |
+      #     echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > firebase-creds.json
+      #     echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/firebase-creds.json" >> $GITHUB_ENV
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools@14.10.1
+
       - name: Deploy Storage Rules
         run: |
-          npm install -g firebase-tools
-          firebase deploy --only storage:rules --project "${{ secrets.FIREBASE_PROJECT_ID }}"
+          firebase deploy \
+          --only storage:rules \
+          --project "${{ secrets.FIREBASE_PROJECT_ID }}" \
+          --token "${{ secrets.FIREBASE_AUTH_TOKEN }}"
 
   deploy-preview:
     name: 🌐 Deploy Preview Hosting
-    needs: [changes, setup]
+    needs: changes
     if: github.ref == 'refs/heads/dev' && needs.changes.outputs.hosting == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      # - name: Write Firebase credentials
+      #   run: |
+      #     echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > firebase-creds.json
+      #     echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/firebase-creds.json" >> $GITHUB_ENV
 
       # Cache root node_modules
       - name: Cache root node_modules
@@ -194,22 +263,46 @@ jobs:
         with:
           node-version: "20"
 
-      - run: |
+      - name: Build production web files
+        run: |
           npm install
           npm install --prefix web
           npm run build --prefix web
 
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools@14.10.1
+
       - name: Deploy to Preview Channel
         id: preview-deploy
         run: |
-          npm install -g firebase-tools
           firebase hosting:channel:deploy dev \
             --project "${{ secrets.FIREBASE_PROJECT_ID }}" \
-            --expires 7d > result.json
-          # Extract URL from the deploy command's JSON output:
-          cat result.json
-          PREVIEW_URL=$(jq -r '.result.previewUrl' result.json)
-          echo "preview_url=$PREVIEW_URL" >> $GITHUB_OUTPUT
+            --expires 7d \
+            --token "${{ secrets.FIREBASE_AUTH_TOKEN }}"
 
-      - name: Show preview URL
-        run: echo "Preview URL: ${{ steps.preview-deploy.outputs.preview_url }}"
+          echo "✅ Finished deploy command"
+
+      #   run: |
+      #     npm install -g firebase-tools@14.10.1
+
+      #     # Run deploy and capture output to a temp file
+      #     set -o pipefail
+      #     firebase hosting:channel:deploy dev \
+      #       --project "${{ secrets.FIREBASE_PROJECT_ID }}" \
+      #       --expires 7d > output.log 2>&1
+
+      #     echo "=== Firebase CLI Output ==="
+      #     cat output.log
+
+      #     # Attempt to parse the preview URL
+      #     if jq -e . output.log >/dev/null 2>&1; then
+      #       PREVIEW_URL=$(jq -r '.result.previewUrl' output.log)
+      #       echo "preview_url=$PREVIEW_URL" >> $GITHUB_OUTPUT
+      #     else
+      #       echo "❌ Could not parse preview URL. Here's the output:"
+      #       cat output.log
+      #       exit 1
+      #     fi
+
+      # - name: Show preview URL
+      #   run: 'echo "Preview URL: ${{ steps.preview-deploy.outputs.preview_url }}"'

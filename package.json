@@ -4,6 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "secrets-init": "node scripts/setup-secrets.js",
     "dev:emulators": "firebase emulators:start",
     "dev:web": "npm run dev --prefix web",
     "start": "npm-run-all --parallel dev:emulators dev:web"

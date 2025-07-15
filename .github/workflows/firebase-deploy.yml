@@ -57,10 +57,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Write Firebase credentials
-        run: |
-          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > firebase-creds.json
-          echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/firebase-creds.json" >> $GITHUB_ENV
+      # - name: Write Firebase credentials
+      #   run: |
+      #     echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > firebase-creds.json
+      #     echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/firebase-creds.json" >> $GITHUB_ENV
 
       # Cache root node_modules
       - name: Cache root node_modules
@@ -89,10 +89,15 @@ jobs:
           npm install --prefix web
           npm run build --prefix web
 
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools@14.10.1
+
       - name: Deploy Hosting
         run: |
-          npm install -g firebase-tools
-          firebase deploy --only hosting --project "${{ secrets.FIREBASE_PROJECT_ID }}"
+          firebase deploy \
+          --only hosting \
+          --project "${{ secrets.FIREBASE_PROJECT_ID }}" \
+          --token "${{ secrets.FIREBASE_AUTH_TOKEN }}"
 
   deploy-functions:
     name: ⚙️ Deploy Functions
@@ -102,10 +107,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Write Firebase credentials
-        run: |
-          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > firebase-creds.json
-          echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/firebase-creds.json" >> $GITHUB_ENV
+      # - name: Write Firebase credentials
+      #   run: |
+      #     echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > firebase-creds.json
+      #     echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/firebase-creds.json" >> $GITHUB_ENV
 
       # Cache root node_modules
       - name: Cache root node_modules
@@ -133,10 +138,15 @@ jobs:
           npm install
           npm install --prefix functions
 
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools@14.10.1
+
       - name: Deploy Functions
         run: |
-          npm install -g firebase-tools
-          firebase deploy --only functions --project "${{ secrets.FIREBASE_PROJECT_ID }}"
+          firebase deploy \
+          --only functions \
+          --project "${{ secrets.FIREBASE_PROJECT_ID }}"
+          --token "${{ secrets.FIREBASE_AUTH_TOKEN }}"
 
   deploy-firestore:
     name: 🔐 Deploy Firestore Rules
@@ -146,15 +156,20 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Write Firebase credentials
-        run: |
-          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > firebase-creds.json
-          echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/firebase-creds.json" >> $GITHUB_ENV
+      # - name: Write Firebase credentials
+      #   run: |
+      #     echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > firebase-creds.json
+      #     echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/firebase-creds.json" >> $GITHUB_ENV
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools@14.10.1
 
       - name: Deploy Firestore Rules
         run: |
-          npm install -g firebase-tools
-          firebase deploy --only firestore:rules --project "${{ secrets.FIREBASE_PROJECT_ID }}"
+          firebase deploy \
+          --only firestore:rules \
+          --project "${{ secrets.FIREBASE_PROJECT_ID }}" \
+          --token "${{ secrets.FIREBASE_AUTH_TOKEN }}"
 
   deploy-database:
     name: 📘 Deploy Realtime DB Rules
@@ -164,15 +179,20 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Write Firebase credentials
-        run: |
-          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > firebase-creds.json
-          echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/firebase-creds.json" >> $GITHUB_ENV
+      # - name: Write Firebase credentials
+      #   run: |
+      #     echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > firebase-creds.json
+      #     echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/firebase-creds.json" >> $GITHUB_ENV
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools@14.10.1
 
       - name: Deploy Realtime DB Rules
         run: |
-          npm install -g firebase-tools
-          firebase deploy --only database:rules --project "${{ secrets.FIREBASE_PROJECT_ID }}"
+          firebase deploy \
+          --only database:rules \
+          --project "${{ secrets.FIREBASE_PROJECT_ID }}" \
+          --token "${{ secrets.FIREBASE_AUTH_TOKEN }}"
 
   deploy-storage:
     name: 🗂 Deploy Storage Rules
@@ -182,15 +202,20 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Write Firebase credentials
-        run: |
-          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > firebase-creds.json
-          echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/firebase-creds.json" >> $GITHUB_ENV
+      # - name: Write Firebase credentials
+      #   run: |
+      #     echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > firebase-creds.json
+      #     echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/firebase-creds.json" >> $GITHUB_ENV
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools@14.10.1
 
       - name: Deploy Storage Rules
         run: |
-          npm install -g firebase-tools
-          firebase deploy --only storage:rules --project "${{ secrets.FIREBASE_PROJECT_ID }}"
+          firebase deploy \
+          --only storage:rules \
+          --project "${{ secrets.FIREBASE_PROJECT_ID }}" \
+          --token "${{ secrets.FIREBASE_AUTH_TOKEN }}"
 
   deploy-preview:
     name: 🌐 Deploy Preview Hosting
@@ -200,10 +225,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Write Firebase credentials
-        run: |
-          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > firebase-creds.json
-          echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/firebase-creds.json" >> $GITHUB_ENV
+      # - name: Write Firebase credentials
+      #   run: |
+      #     echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > firebase-creds.json
+      #     echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/firebase-creds.json" >> $GITHUB_ENV
 
       # Cache root node_modules
       - name: Cache root node_modules
@@ -234,20 +259,20 @@ jobs:
           npm run build --prefix web
 
       - name: Install Firebase CLI
-        run: npm install -g firebase-tools
+        run: npm install -g firebase-tools@14.10.1
 
       - name: Deploy to Preview Channel
         id: preview-deploy
         run: |
-          cat $GOOGLE_APPLICATION_CREDENTIALS
           firebase hosting:channel:deploy dev \
             --project "${{ secrets.FIREBASE_PROJECT_ID }}" \
-            --expires 7d
+            --expires 7d \
+            --token "${{ secrets.FIREBASE_AUTH_TOKEN }}"
 
           echo "✅ Finished deploy command"
 
       #   run: |
-      #     npm install -g firebase-tools
+      #     npm install -g firebase-tools@14.10.1
 
       #     # Run deploy and capture output to a temp file
       #     set -o pipefail

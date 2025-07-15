@@ -31,7 +31,13 @@ if (secrets.frontend) {
   writeEnvFile(webPath, secrets.frontend);
 }
 
-// 3. .firebaserc (to link Firebase CLI with correct project ID)
+// 3. functions/.secret.local
+if (secrets.functions) {
+  const functionsPath = path.join("functions", ".secret.local");
+  writeEnvFile(functionsPath, secrets.functions);
+}
+
+// 4. .firebaserc (to link Firebase CLI with correct project ID)
 if (secrets.firebaseProjectId) {
   fs.writeFileSync(
     ".firebaserc",

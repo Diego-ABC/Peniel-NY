@@ -33,29 +33,34 @@ jobs:
             storage:
               - 'storage.rules'
 
-  setup:
-    name: 🔐 Set Up Credentials
-    runs-on: ubuntu-latest
-    outputs:
-      creds-path: ${{ steps.write-creds.outputs.creds-path }}
-    steps:
-      - name: Write service account credentials
-        id: write-creds
-        run: |
-          echo -e "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > ${{ github.workspace }}/firebase-creds.json
-          echo "GOOGLE_APPLICATION_CREDENTIALS=${{ github.workspace }}/firebase-creds.json" >> $GITHUB_ENV
-          echo "creds-path=${{ github.workspace }}/firebase-creds.json" >> $GITHUB_OUTPUT
+  # setup:
+  #   name: 🔐 Set Up Credentials
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     creds-path: ${{ steps.write-creds.outputs.creds-path }}
+  #   steps:
+  #     - name: Write service account credentials
+  #       id: write-creds
+  #       run: |
+  #         echo -e "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > ${{ github.workspace }}/firebase-creds.json
+  #         echo "GOOGLE_APPLICATION_CREDENTIALS=${{ github.workspace }}/firebase-creds.json" >> $GITHUB_ENV
+  #         echo "creds-path=${{ github.workspace }}/firebase-creds.json" >> $GITHUB_OUTPUT
 
-          echo "🔍 Dumping service account JSON (for debug only):"
-          head -n 5 ${{ github.workspace }}/firebase-creds.json
+  #         echo "🔍 Dumping service account JSON (for debug only):"
+  #         head -n 5 ${{ github.workspace }}/firebase-creds.json
 
   deploy-hosting:
     name: 🚀 Deploy Hosting
-    needs: [changes, setup]
+    needs: changes
     if: needs.changes.outputs.hosting == 'true' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      - name: Write Firebase credentials
+        run: |
+          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > firebase-creds.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/firebase-creds.json" >> $GITHUB_ENV
 
       # Cache root node_modules
       - name: Cache root node_modules
@@ -91,11 +96,16 @@ jobs:
 
   deploy-functions:
     name: ⚙️ Deploy Functions
-    needs: [changes, setup]
+    needs: changes
     if: needs.changes.outputs.functions == 'true' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      - name: Write Firebase credentials
+        run: |
+          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > firebase-creds.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/firebase-creds.json" >> $GITHUB_ENV
 
       # Cache root node_modules
       - name: Cache root node_modules
@@ -130,11 +140,16 @@ jobs:
 
   deploy-firestore:
     name: 🔐 Deploy Firestore Rules
-    needs: [changes, setup]
+    needs: changes
     if: needs.changes.outputs.firestore == 'true' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      - name: Write Firebase credentials
+        run: |
+          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > firebase-creds.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/firebase-creds.json" >> $GITHUB_ENV
 
       - name: Deploy Firestore Rules
         run: |
@@ -143,11 +158,16 @@ jobs:
 
   deploy-database:
     name: 📘 Deploy Realtime DB Rules
-    needs: [changes, setup]
+    needs: changes
     if: needs.changes.outputs.database == 'true' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      - name: Write Firebase credentials
+        run: |
+          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > firebase-creds.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/firebase-creds.json" >> $GITHUB_ENV
 
       - name: Deploy Realtime DB Rules
         run: |
@@ -156,11 +176,16 @@ jobs:
 
   deploy-storage:
     name: 🗂 Deploy Storage Rules
-    needs: [changes, setup]
+    needs: changes
     if: needs.changes.outputs.storage == 'true' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      - name: Write Firebase credentials
+        run: |
+          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > firebase-creds.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/firebase-creds.json" >> $GITHUB_ENV
 
       - name: Deploy Storage Rules
         run: |
@@ -169,11 +194,16 @@ jobs:
 
   deploy-preview:
     name: 🌐 Deploy Preview Hosting
-    needs: [changes, setup]
+    needs: changes
     if: github.ref == 'refs/heads/dev' && needs.changes.outputs.hosting == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      - name: Write Firebase credentials
+        run: |
+          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > firebase-creds.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/firebase-creds.json" >> $GITHUB_ENV
 
       # Cache root node_modules
       - name: Cache root node_modules
@@ -209,8 +239,6 @@ jobs:
       - name: Deploy to Preview Channel
         id: preview-deploy
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="${{ needs.setup.outputs.creds-path }}"
-          echo "$GOOGLE_APPLICATION_CREDENTIALS"
           cat $GOOGLE_APPLICATION_CREDENTIALS
           firebase hosting:channel:deploy dev \
             --project "${{ secrets.FIREBASE_PROJECT_ID }}" \

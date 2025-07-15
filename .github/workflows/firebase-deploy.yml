@@ -204,17 +204,15 @@ jobs:
         run: |
           npm install -g firebase-tools
 
-          # Run deploy and capture output to a temp file
-          set -o pipefail
+          echo "=== Running Firebase Preview Deploy ==="
+
+          # Run deploy and print both stdout and stderr directly
           firebase hosting:channel:deploy dev \
             --project "${{ secrets.FIREBASE_PROJECT_ID }}" \
-            --expires 7d > output.log 2>&1
+            --expires 7d
 
-          echo "=== Firebase CLI Output ==="
-          cat output.log
+          echo "✅ Finished deploy command"
 
-          # Just fail manually to pause here for now
-          exit 1
       #   run: |
       #     npm install -g firebase-tools
 

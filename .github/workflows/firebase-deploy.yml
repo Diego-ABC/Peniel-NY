@@ -9,11 +9,11 @@ jobs:
     name: 🧠 Analyze Changes
     runs-on: ubuntu-latest
     outputs:
-      hosting: ${{ steps.filter.outputs.hosting }}
-      functions: ${{ steps.filter.outputs.functions }}
-      firestore: ${{ steps.filter.outputs.firestore }}
-      database: ${{ steps.filter.outputs.database }}
-      storage: ${{ steps.filter.outputs.storage }}
+      hosting: ${{ steps.filter.outputs.hosting || 'false' }}
+      functions: ${{ steps.filter.outputs.functions || 'false' }}
+      firestore: ${{ steps.filter.outputs.firestore || 'false' }}
+      database: ${{ steps.filter.outputs.database || 'false' }}
+      storage: ${{ steps.filter.outputs.storage || 'false' }}
     steps:
       - uses: actions/checkout@v3
 
@@ -32,6 +32,14 @@ jobs:
               - 'database.rules.json'
             storage:
               - 'storage.rules'
+
+      - name: Debug paths filter output
+        run: |
+          echo "Hosting: ${{ steps.filter.outputs.hosting }}"
+          echo "Functions: ${{ steps.filter.outputs.functions }}"
+          echo "Firestore: ${{ steps.filter.outputs.firestore }}"
+          echo "Database: ${{ steps.filter.outputs.database }}"
+          echo "Storage: ${{ steps.filter.outputs.storage }}"
 
   # setup:
   #   name: 🔐 Set Up Credentials

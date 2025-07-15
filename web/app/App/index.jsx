@@ -1,4 +1,4 @@
-// import "@/lib/firebase";
+import "@/lib/firebase";
 import "@/assets/index.css";
 import { RouterProvider } from "react-router-dom";
 import router from "./router";

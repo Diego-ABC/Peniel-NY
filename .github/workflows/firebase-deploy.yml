@@ -206,7 +206,8 @@ jobs:
 
           echo "=== Running Firebase Preview Deploy ==="
 
-          # Run deploy and print both stdout and stderr directly
+          export GOOGLE_APPLICATION_CREDENTIALS="${{ needs.setup.outputs.creds-file }}"
+
           firebase hosting:channel:deploy dev \
             --project "${{ secrets.FIREBASE_PROJECT_ID }}" \
             --expires 7d

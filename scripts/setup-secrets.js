@@ -14,6 +14,13 @@ if (!fs.existsSync(secretsPath)) {
 
 const secrets = JSON.parse(fs.readFileSync(secretsPath, "utf-8"));
 
+console.log(
+  "setup-secrets.js only sets up local env and secret vars for local development"
+);
+console.log(
+  "any actual values you need pushed to firebase needs to be handled manually"
+);
+
 function writeEnvFile(filePath, vars) {
   const lines = Object.entries(vars).map(([key, val]) => `${key}=${val}`);
   fs.writeFileSync(filePath, lines.join("\n"), "utf-8");

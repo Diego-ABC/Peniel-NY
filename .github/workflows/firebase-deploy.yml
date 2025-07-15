@@ -206,11 +206,13 @@ jobs:
       - name: Deploy to Preview Channel
         id: preview-deploy
         run: |
-          OUTPUT=$(firebase hosting:channel:deploy dev \
+          export GOOGLE_APPLICATION_CREDENTIALS="${{ needs.setup.outputs.creds-path }}"
+          echo "$GOOGLE_APPLICATION_CREDENTIALS"
+          firebase hosting:channel:deploy dev \
             --project "${{ secrets.FIREBASE_PROJECT_ID }}" \
-            --expires 7d)
-          echo "$OUTPUT"
-          echo "preview_url=$(echo "$OUTPUT" | grep -o 'https://[^\"]*')" >> $GITHUB_OUTPUT
+            --expires 7d
+
+          echo "✅ Finished deploy command"
 
       #   run: |
       #     npm install -g firebase-tools

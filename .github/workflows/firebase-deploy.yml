@@ -34,7 +34,7 @@ jobs:
               - 'database.rules.json'
             storage:
               - 'storage.rules'
-          base: HEAD^
+          base: ${{ github.event.before }}
 
       - name: Debug paths filter output
         run: |

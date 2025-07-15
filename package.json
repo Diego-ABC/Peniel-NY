@@ -7,7 +7,8 @@
     "secrets-init": "node scripts/setup-secrets.js",
     "dev:emulators": "firebase emulators:start",
     "dev:web": "npm run dev --prefix web",
-    "start": "npm-run-all --parallel --continue-on-error dev:emulators dev:web"
+    "start": "npm-run-all --parallel --continue-on-error dev:emulators dev:web",
+    "build": "npm run build --prefix web"
   },
   "keywords": [],
   "author": "",

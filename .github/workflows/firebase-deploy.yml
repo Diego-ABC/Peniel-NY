@@ -37,7 +37,7 @@ jobs:
     name: 🔐 Set Up Credentials
     runs-on: ubuntu-latest
     outputs:
-      creds-path: ${{ steps.write-creds.outputs.creds-paths }}
+      creds-path: ${{ steps.write-creds.outputs.creds-path }}
     steps:
       - name: Write service account credentials
         id: write-creds

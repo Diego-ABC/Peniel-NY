@@ -208,6 +208,7 @@ jobs:
         run: |
           export GOOGLE_APPLICATION_CREDENTIALS="${{ needs.setup.outputs.creds-path }}"
           echo "$GOOGLE_APPLICATION_CREDENTIALS"
+          cat $GOOGLE_APPLICATION_CREDENTIALS
           firebase hosting:channel:deploy dev \
             --project "${{ secrets.FIREBASE_PROJECT_ID }}" \
             --expires 7d

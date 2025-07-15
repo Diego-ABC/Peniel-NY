@@ -16,6 +16,8 @@ jobs:
       storage: ${{ steps.filter.outputs.storage || 'false' }}
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
 
       - name: Filter Changed Files
         id: filter
@@ -32,6 +34,7 @@ jobs:
               - 'database.rules.json'
             storage:
               - 'storage.rules'
+          base: HEAD^
 
       - name: Debug paths filter output
         run: |

@@ -195,7 +195,7 @@ jobs:
           node-version: "20"
 
       - name: Build production web files
-      - run: |
+        run: |
           npm install
           npm install --prefix web
           npm run build --prefix web

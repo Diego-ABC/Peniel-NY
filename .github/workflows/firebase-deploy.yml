@@ -44,6 +44,7 @@ jobs:
         run: |
           echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > "${{ github.workspace }}/firebase-creds.json"
           echo "GOOGLE_APPLICATION_CREDENTIALS=${{ github.workspace }}/firebase-creds.json" >> $GITHUB_ENV
+          cat $GOOGLE_APPLICATION_CREDENTIALS
           echo "creds-path=${{ github.workspace }}/firebase-creds.json" >> $GITHUB_OUTPUT
 
   deploy-hosting:

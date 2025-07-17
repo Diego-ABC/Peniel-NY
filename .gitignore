@@ -69,6 +69,7 @@ node_modules/
 .dataconnect
 
 #root level
+.env
 .env.local
 .firebase/
 .firebaserc

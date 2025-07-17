@@ -95,6 +95,11 @@ jobs:
         with:
           node-version: "20"
 
+      - name: Setup secrets
+        run: node scripts/setup-secrets.js
+        env:
+          ROOT_SECRETS_JSON: ${{ secrets.ROOT_SECRETS_JSON }}
+
       - run: |
           npm install
           npm install --prefix web
@@ -145,6 +150,11 @@ jobs:
         with:
           node-version: "20"
 
+      - name: Setup secrets
+        run: node scripts/setup-secrets.js
+        env:
+          ROOT_SECRETS_JSON: ${{ secrets.ROOT_SECRETS_JSON }}
+
       - run: |
           npm install
           npm install --prefix functions
@@ -175,6 +185,11 @@ jobs:
       - name: Install Firebase CLI
         run: npm install -g firebase-tools@14.10.1
 
+      - name: Setup secrets
+        run: node scripts/setup-secrets.js
+        env:
+          ROOT_SECRETS_JSON: ${{ secrets.ROOT_SECRETS_JSON }}
+
       - name: Deploy Firestore Rules
         run: |
           firebase deploy \
@@ -198,6 +213,11 @@ jobs:
       - name: Install Firebase CLI
         run: npm install -g firebase-tools@14.10.1
 
+      - name: Setup secrets
+        run: node scripts/setup-secrets.js
+        env:
+          ROOT_SECRETS_JSON: ${{ secrets.ROOT_SECRETS_JSON }}
+
       - name: Deploy Realtime DB Rules
         run: |
           firebase deploy \
@@ -220,6 +240,11 @@ jobs:
 
       - name: Install Firebase CLI
         run: npm install -g firebase-tools@14.10.1
+
+      - name: Setup secrets
+        run: node scripts/setup-secrets.js
+        env:
+          ROOT_SECRETS_JSON: ${{ secrets.ROOT_SECRETS_JSON }}
 
       - name: Deploy Storage Rules
         run: |
@@ -262,6 +287,11 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: "20"
+
+      - name: Setup secrets
+        run: node scripts/setup-secrets.js
+        env:
+          ROOT_SECRETS_JSON: ${{ secrets.ROOT_SECRETS_JSON }}
 
       - name: Build production web files
         run: |

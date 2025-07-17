@@ -93,7 +93,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: "20"
+          node-version: "22"
 
       - name: Setup secrets
         run: node scripts/setup-secrets.js
@@ -148,7 +148,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: "20"
+          node-version: "22"
 
       - name: Setup secrets
         run: node scripts/setup-secrets.js
@@ -286,7 +286,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: "20"
+          node-version: "22"
 
       - name: Setup secrets
         run: node scripts/setup-secrets.js

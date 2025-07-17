@@ -4,15 +4,17 @@ const fs = require("fs");
 const path = require("path");
 const { execSync } = require("child_process");
 
+let secrets = process.env.ROOT_SECRETS_JSON;
 const secretsPath = path.resolve(".secrets.json");
-if (!fs.existsSync(secretsPath)) {
-  console.error(
-    "❌ Missing .secrets.json\nYou must create this file first. Use `secrets.template.json` as a guide."
-  );
-  process.exit(1);
+if (!secrets) {
+  if (!fs.existsSync(secretsPath)) {
+    console.error(
+      "❌ Missing .secrets.json\nYou must create this file first. Use `secrets.template.json` as a guide."
+    );
+    process.exit(1);
+  }
+  secrets = JSON.parse(fs.readFileSync(secretsPath, "utf-8"));
 }
-
-const secrets = JSON.parse(fs.readFileSync(secretsPath, "utf-8"));
 
 console.log(
   "setup-secrets.js only sets up local env and secret vars for local development"

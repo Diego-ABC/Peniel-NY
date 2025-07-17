@@ -29,14 +29,14 @@ function writeEnvFile(filePath, vars) {
   console.log(`✅ Wrote ${filePath}`);
 }
 
-// 1. .env.local (for Firebase Functions or root config)
+// 1. .env (for Firebase Functions or root config)
 if (secrets.backend) {
-  writeEnvFile(".env.local", secrets.backend);
+  writeEnvFile(".env", secrets.backend);
 }
 
-// 2. web/.env.local (for Vite app)
+// 2. web/.env (for Vite app)
 if (secrets.frontend) {
-  const webPath = path.join("web", ".env.local");
+  const webPath = path.join("web", ".env");
   writeEnvFile(webPath, secrets.frontend);
 }
 

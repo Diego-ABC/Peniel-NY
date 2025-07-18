@@ -30,8 +30,7 @@ const app = initializeApp(firebaseConfig);
 
 // Import the functions you need from the SDKs you need
 
-const isLocal =
-  typeof location !== "undefined" && location.hostname === "localhost";
+const isLocal = import.meta.env.DEV;
 
 if (isLocal) {
   const auth = getAuth(app);

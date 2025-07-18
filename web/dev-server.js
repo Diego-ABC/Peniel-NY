@@ -69,7 +69,7 @@ async function start() {
   // 3. Let Vite handle assets and dev middleware
   app.use(vite.middlewares);
 
-  app.listen(5173, () => {
+  app.listen(5173, "0.0.0.0", () => {
     console.log("✅ Dev server running at http://localhost:5173");
     console.log(`🏠 Landing page → http://localhost:5173/`);
     console.log(`⚛️  React app → http://localhost:5173${appBasePath}`);

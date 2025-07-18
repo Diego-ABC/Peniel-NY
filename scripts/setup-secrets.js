@@ -29,6 +29,8 @@ function writeEnvFile(filePath, vars) {
   console.log(`✅ Wrote ${filePath}`);
 }
 
+console.log(secrets);
+
 // 1. .env (for Firebase Functions or root config)
 if (secrets.backend) {
   writeEnvFile(".env", secrets.backend);
@@ -59,10 +61,10 @@ if (secrets.firebaseProjectId) {
   console.log("✅ Wrote .firebaserc");
 }
 
-// 4. Install dependencies
-console.log("📦 Installing dependencies...");
-execSync("npm install", { stdio: "inherit" });
-execSync("cd functions && npm install", { stdio: "inherit" });
-execSync("cd web && npm install", { stdio: "inherit" });
+// // 4. Install dependencies
+// console.log("📦 Installing dependencies...");
+// execSync("npm install", { stdio: "inherit" });
+// execSync("cd functions && npm install", { stdio: "inherit" });
+// execSync("cd web && npm install", { stdio: "inherit" });
 
 console.log("🎉 Setup complete! You’re ready to develop locally.");

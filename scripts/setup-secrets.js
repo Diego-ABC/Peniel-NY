@@ -13,8 +13,9 @@ if (!secrets) {
     );
     process.exit(1);
   }
-  secrets = JSON.parse(fs.readFileSync(secretsPath, "utf-8"));
+  secrets = fs.readFileSync(secretsPath, "utf-8");
 }
+secrets = JSON.parse(secrets);
 
 console.log(
   "setup-secrets.js only sets up local env and secret vars for local development"

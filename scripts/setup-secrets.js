@@ -30,8 +30,6 @@ function writeEnvFile(filePath, vars) {
   console.log(`✅ Wrote ${filePath}`);
 }
 
-console.log(secrets);
-
 // 1. .env (for Firebase Functions or root config)
 if (secrets.backend) {
   writeEnvFile(".env", secrets.backend);

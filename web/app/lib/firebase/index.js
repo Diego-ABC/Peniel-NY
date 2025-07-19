@@ -39,10 +39,11 @@ export const db = getDatabase(app);
 export const storage = getStorage(app);
 
 if (isLocal) {
+  const host = location.hostname;
   console.log("hosted on localhost. connecting to emulator.");
-  connectAuthEmulator(auth, "http://localhost:9099");
-  connectFirestoreEmulator(fs, "localhost", 8080);
-  connectFunctionsEmulator(functions, "localhost", 5001);
-  connectDatabaseEmulator(db, "localhost", 9000);
-  connectStorageEmulator(storage, "localhost", 9199);
+  connectAuthEmulator(auth, `http://${host}:9099`);
+  connectFirestoreEmulator(fs, host, 8080);
+  connectFunctionsEmulator(functions, host, 5001);
+  connectDatabaseEmulator(db, host, 9000);
+  connectStorageEmulator(storage, host, 9199);
 }

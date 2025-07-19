@@ -32,12 +32,13 @@ const app = initializeApp(firebaseConfig);
 
 const isLocal = import.meta.env.DEV;
 
+export const auth = getAuth(app);
+export const fs = getFirestore(app);
+export const functions = getFunctions(app);
+export const db = getDatabase(app);
+export const storage = getStorage(app);
+
 if (isLocal) {
-  const auth = getAuth(app);
-  const fs = getFirestore(app);
-  const functions = getFunctions(app);
-  const db = getDatabase(app);
-  const storage = getStorage(app);
   console.log("hosted on localhost. connecting to emulator.");
   connectAuthEmulator(auth, "http://localhost:9099");
   connectFirestoreEmulator(fs, "localhost", 8080);

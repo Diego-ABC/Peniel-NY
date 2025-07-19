@@ -65,5 +65,10 @@ if (secrets.firebaseProjectId) {
 // execSync("npm install", { stdio: "inherit" });
 // execSync("cd functions && npm install", { stdio: "inherit" });
 // execSync("cd web && npm install", { stdio: "inherit" });
+// // 4. Install dependencies
+// console.log("📦 Installing dependencies...");
+// execSync("npm install", { stdio: "inherit" });
+// execSync("cd functions && npm install", { stdio: "inherit" });
+// execSync("cd web && npm install", { stdio: "inherit" });
 
 console.log("🎉 Setup complete! You’re ready to develop locally.");

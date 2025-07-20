@@ -12,7 +12,7 @@ export async function login({ email, password }) {
 }
 
 export async function logout() {
-  return await signOut();
+  return await signOut(auth);
 }
 
 export function subscribeToAuth(callback) {

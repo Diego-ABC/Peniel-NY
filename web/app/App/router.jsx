@@ -6,6 +6,8 @@ import {
 import DashboardLayout from "./layout/DashboardLayout";
 import SignIn from "./features/auth/pages/SignIn";
 import RequireAuth from "./features/auth/guards/RequireAuth";
+import signInAction from "./features/auth/services/signInAction";
+import signOutLoader from "./features/auth/services/signOutLoader";
 
 export default createBrowserRouter(
   createRoutesFromElements(
@@ -18,7 +20,12 @@ export default createBrowserRouter(
           </RequireAuth>
         }
       />
-      <Route path="/signin" element={<SignIn />} />
+      <Route
+        path="/signin"
+        element={<SignIn />}
+        action={signInAction}
+        loader={signOutLoader}
+      />
     </Route>
   ),
   { basename: import.meta.env.VITE_APP_BASE_PATH }

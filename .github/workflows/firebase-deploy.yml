@@ -4,9 +4,6 @@ on:
   pull_request:
     branches: [main, dev]
 
-on:
-  
-
 jobs:
   changes:
     name: 🧠 Analyze Changes

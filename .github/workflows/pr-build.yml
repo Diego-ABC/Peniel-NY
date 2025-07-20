@@ -1,0 +1,86 @@
+name: 🧪 PR Build Check
+
+on:
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  changes:
+    name: 🧠 Analyze Changes
+    runs-on: ubuntu-latest
+    outputs:
+      hosting: ${{ steps.filter.outputs.hosting || 'false' }}
+      functions: ${{ steps.filter.outputs.functions || 'false' }}
+      firestore: ${{ steps.filter.outputs.firestore || 'false' }}
+      database: ${{ steps.filter.outputs.database || 'false' }}
+      storage: ${{ steps.filter.outputs.storage || 'false' }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: Filter Changed Files
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            hosting:
+              - 'web/**'
+            functions:
+              - 'functions/**'
+            firestore:
+              - 'firestore.rules'
+            database:
+              - 'database.rules.json'
+            storage:
+              - 'storage.rules'
+          base: ${{ github.event.before }}
+
+      - name: Debug paths filter output
+        run: |
+          echo "Hosting: ${{ steps.filter.outputs.hosting }}"
+          echo "Functions: ${{ steps.filter.outputs.functions }}"
+          echo "Firestore: ${{ steps.filter.outputs.firestore }}"
+          echo "Database: ${{ steps.filter.outputs.database }}"
+          echo "Storage: ${{ steps.filter.outputs.storage }}"
+
+  build-hosting:
+    name: 🚀 Build Hosting
+    needs: changes
+    if: needs.changes.outputs.hosting == 'true' && github.event.pull_request.base.ref == 'dev'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      # Cache root node_modules
+      - name: Cache root node_modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      # Cache web node_modules
+      - name: Cache web/node_modules
+        uses: actions/cache@v3
+        with:
+          path: web/node_modules
+          key: ${{ runner.os }}-web-node-${{ hashFiles('web/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-web-node-
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "22"
+
+      - name: Setup secrets
+        run: node scripts/setup-secrets.js
+        env:
+          ROOT_SECRETS_JSON: ${{ secrets.ROOT_SECRETS_JSON }}
+
+      - run: |
+          npm install
+          npm install --prefix web
+          npm run build --prefix web

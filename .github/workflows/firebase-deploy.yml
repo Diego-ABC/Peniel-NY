@@ -44,22 +44,6 @@ jobs:
           echo "Database: ${{ steps.filter.outputs.database }}"
           echo "Storage: ${{ steps.filter.outputs.storage }}"
 
-  # setup:
-  #   name: 🔐 Set Up Credentials
-  #   runs-on: ubuntu-latest
-  #   outputs:
-  #     creds-path: ${{ steps.write-creds.outputs.creds-path }}
-  #   steps:
-  #     - name: Write service account credentials
-  #       id: write-creds
-  #       run: |
-  #         echo -e "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > ${{ github.workspace }}/firebase-creds.json
-  #         echo "GOOGLE_APPLICATION_CREDENTIALS=${{ github.workspace }}/firebase-creds.json" >> $GITHUB_ENV
-  #         echo "creds-path=${{ github.workspace }}/firebase-creds.json" >> $GITHUB_OUTPUT
-
-  #         echo "🔍 Dumping service account JSON (for debug only):"
-  #         head -n 5 ${{ github.workspace }}/firebase-creds.json
-
   deploy-hosting:
     name: 🚀 Deploy Hosting
     needs: changes

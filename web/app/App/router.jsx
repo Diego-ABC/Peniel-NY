@@ -8,6 +8,7 @@ import SignIn from "./features/auth/pages/SignIn";
 import RequireAuth from "./features/auth/guards/RequireAuth";
 import signInAction from "./features/auth/services/signInAction";
 import signOutLoader from "./features/auth/services/signOutLoader";
+import NotFound from "./layout/NotFoundPage";
 
 export default createBrowserRouter(
   createRoutesFromElements(
@@ -19,7 +20,9 @@ export default createBrowserRouter(
             <DashboardLayout />
           </RequireAuth>
         }
-      />
+      >
+        <Route path="*" element={<NotFound />} />
+      </Route>
       <Route
         path="/signin"
         element={<SignIn />}

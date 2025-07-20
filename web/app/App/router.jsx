@@ -10,6 +10,7 @@ import signInAction from "./features/auth/services/signInAction";
 import signOutLoader from "./features/auth/services/signOutLoader";
 import NotFound from "./layout/NotFoundPage";
 import homeRedirectLoader from "./layout/DashboardLayout/homeRedirectLoader";
+import DirectoryHome from "./features/directory/pages/DirectoryHome";
 
 export default createBrowserRouter(
   createRoutesFromElements(
@@ -23,6 +24,7 @@ export default createBrowserRouter(
         }
       >
         <Route index loader={homeRedirectLoader} />
+        <Route path="directory" element={<DirectoryHome />} />
         <Route path="*" element={<NotFound />} />
       </Route>
       <Route

@@ -32,8 +32,9 @@ export default async function newContactAction({ request }) {
       canDrive,
       contactImgFile,
     });
-    return redirect("directory");
   } catch (error) {
-    return { error: error.message };
+    console.log(error);
+    // return { error: error.message };
   }
+  return redirect("/directory");
 }

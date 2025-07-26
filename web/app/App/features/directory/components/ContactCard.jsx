@@ -1,5 +1,5 @@
 import Phone from "@/assets/icons/Phone";
-import sampleContact from "../services/sampleContact";
+// import sampleContact from "../services/sampleContact";
 import Car from "@/assets/icons/Car";
 import License from "@/assets/icons/License";
 import UserId from "@/assets/icons/UserId";
@@ -41,7 +41,9 @@ export default function ContactCard({
         <div className="w-full border-b-2 border-primary">
           {address} | {city}, {state} {zip}
         </div>
-        <div className="w-full border-b-2 border-primary">{email}</div>
+        <div className="w-full border-b-2 border-primary">
+          {email || "noEmail"}
+        </div>
         {/* <div className="w-full border-b-2 border-primary flex flex-row items-center gap-2">
           <Phone size="size-4" />
           {[phone, altPhone].join(" · ")}

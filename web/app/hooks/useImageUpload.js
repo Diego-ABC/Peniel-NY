@@ -1,7 +1,7 @@
 import { useState } from "react";
 
-export default function useImageUpload() {
-  const [imgUrl, setImgUrl] = useState(null);
+export default function useImageUpload(originalImgURL = null) {
+  const [imgUrl, setImgUrl] = useState(originalImgURL);
   const [error, setError] = useState(false);
 
   const handleImageUpload = ({ target }) => {
@@ -15,5 +15,11 @@ export default function useImageUpload() {
     setImgUrl(imgUrl);
     setError(false);
   };
-  return { imgUrl, error, handleImageUpload };
+
+  const clearImg = () => {
+    setError(false);
+    setImgUrl(null);
+  };
+
+  return { imgUrl, error, handleImageUpload, clearImg };
 }

@@ -1,13 +1,23 @@
-import { getFirestore, doc, addDoc, updateDoc } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
-import addNewImage from "./addContactImg";
+import {
+  getFirestore,
+  collection,
+  // addDoc,
+  // updateDoc,
+  doc,
+  serverTimestamp,
+  setDoc,
+  Timestamp,
+} from "firebase/firestore";
+// import { getStorage } from "firebase/storage";
 import addContactImage from "./addContactImg";
 const db = getFirestore();
-const storage = getStorage();
+// const storage = getStorage();
 export default async function createContact(contactData) {
+  // contactData.createdAt = serverTimestamp();
+  contactData.createdAt = Timestamp.now();
   let hasImgFile = false;
   let imageFile = null;
-
+  console.log(contactData);
   if (contactData.contactImgFile) {
     if (contactData.contactImgFile.size > 0) {
       //used for storing image file after creating contact, for contact id ref
@@ -17,15 +27,17 @@ export default async function createContact(contactData) {
     delete contactData.contactImgFile;
   }
 
-  const contactRef = await addDoc(doc(db, "contacts"), contactData);
+  // const contactRef = await addDoc(collection(db, "contacts"), contactData);
+  const contactRef = doc(collection(db, "contacts"));
 
-  if (!hasImgFile) return contactRef.id;
+  if (hasImgFile)
+    contactData.imgUrl = await addContactImage(imageFile, contactRef.id);
+  // const imgUrl = await addContactImage(imageFile, contactRef.id);
+  // console.log("adding doc url");
+  // // await updateDoc(contactRef, { imgUrl });
+  // contactData.imgUrl = imgUrl
 
-  const imgUrl = await addContactImage(
-    contactData.contactImgFile,
-    contactRef.id
-  );
+  await setDoc(contactRef, contactData);
 
-  await updateDoc(contactRef, { imgUrl });
   return contactRef.id;
 }

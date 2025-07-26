@@ -11,7 +11,6 @@ import signOutLoader from "./features/auth/services/signOutLoader";
 import NotFound from "./layout/NotFoundPage";
 import homeRedirectLoader from "./layout/DashboardLayout/homeRedirectLoader";
 import DirectoryHome from "./features/directory/pages/DirectoryHome";
-import newContactAction from "./features/directory/forms/newContactAction";
 
 export default createBrowserRouter(
   createRoutesFromElements(
@@ -26,7 +25,6 @@ export default createBrowserRouter(
       >
         <Route index loader={homeRedirectLoader} />
         <Route path="directory" element={<DirectoryHome />} />
-        <Route path="newcontact" action={newContactAction} />
         <Route path="*" element={<NotFound />} />
       </Route>
       <Route

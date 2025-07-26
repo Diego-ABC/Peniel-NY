@@ -17,8 +17,11 @@ export default function Modal({ open, setOpen, children, className }) {
   }, [open, setOpen]);
 
   return (
-    <dialog ref={dialogRef} className={["modal", className].join(" ")}>
-      {children}
+    <dialog ref={dialogRef} className="modal">
+      <div className={["modal-box", className].join(" ")}>{children}</div>
+      <form method="dialog" className="modal-backdrop">
+        <button>close</button>
+      </form>
     </dialog>
   );
 }

@@ -6,7 +6,7 @@ export default function DashboardLayout() {
     <div className="w-dvw h-dvh bg-base-200 flex">
       <NavPane />
       <div className="grow basis-0 shrink-0 h-full overflow-auto">
-        <div className="p-5 min-w-full min-h-full">
+        <div className="p-5 min-w-full min-h-full w-fit">
           <Outlet />
         </div>
       </div>

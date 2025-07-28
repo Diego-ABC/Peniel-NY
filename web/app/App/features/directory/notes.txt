@@ -1,0 +1,7 @@
+This feature is incomplete. Only implements creationg and reading of contacts. 
+Need to implement editing and deletion. 
+Also need to implement a live contacts' listener hook.
+Implementation is a little difficult as it's in firestore and it doesn't
+have a simple onchildadded and onchildremoved listener.
+Gotta use "on query snapshot" combinations that allow listening to 
+deletions, creations,and updates, and allows for pagination.
